@@ -55,3 +55,9 @@ clean:
 	      block_d_louds block_e_compression block_f_tail_latency \
 	      block_g_downstream block_h_worked_examples profiler profiler_isolated
 	@echo "Cleaned build artifacts"
+
+# Regenerate protobuf and flatbuffers headers from schema files
+gen-proto:
+	protoc --cpp_out=. tree.proto
+	flatc --cpp tree.fbs
+	@echo "Generated tree.pb.h tree.pb.cc tree_generated.h"
