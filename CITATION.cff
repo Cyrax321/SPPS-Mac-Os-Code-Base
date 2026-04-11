@@ -4,7 +4,7 @@ title: "Signed Positional Prüfer Sequences (SPPS)"
 authors:
   - name: "The Authors"
 version: 0.1.0
-date-released: 2026-04-10
+date-released: 2026-04-11
 repository-code: "https://github.com/Cyrax321/SPPS-Mac-Os-Code-Base"
 license: "All Rights Reserved"
 abstract: >
@@ -20,3 +20,10 @@ keywords:
   - LOUDS
   - data structures
   - ESA 2026
+url: "https://github.com/Cyrax321/SPPS-Mac-Os-Code-Base"
+preferred-citation:
+  type: conference-paper
+  title: "Signed Positional Prüfer Sequences (SPPS): A Novel Linear-Time Tree Serialization Algorithm"
+  conference: "European Symposium on Algorithms (ESA) 2026"
+  year: 2026
+  status: submitted
