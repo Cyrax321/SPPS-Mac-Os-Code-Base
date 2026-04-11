@@ -45,3 +45,17 @@ jobs:
 
       - name: Verify dataset node counts
         run: bash scripts/verify_datasets.sh
+
+  markdown-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check markdown files exist and are non-empty
+        run: |
+          for f in README.md CHANGELOG.md CITATION.cff SECURITY.md ACKNOWLEDGEMENTS.md; do
+            if [ ! -s "$f" ]; then
+              echo "EMPTY or MISSING: $f"
+              exit 1
+            fi
+            echo "OK: $f ($(wc -l < $f) lines)"
+          done
