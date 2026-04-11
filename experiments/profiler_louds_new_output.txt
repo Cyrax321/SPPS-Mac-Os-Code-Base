@@ -1,0 +1,26 @@
+Method: louds, Dataset: real_ast_benchmark.txt, n=2325575
+  Iter 1: 157.224 ms
+  Iter 2: 159.372 ms
+  Iter 3: 159.71 ms
+  Iter 4: 158.355 ms
+  Iter 5: 161.24 ms
+Peak RSS: 168 MB
+DONE
+        2.35 real         1.60 user         0.05 sys
+           176504832  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               11318  page reclaims
+                  96  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   4  voluntary context switches
+                1150  involuntary context switches
+         20286293622  instructions retired
+          5140543019  cycles elapsed
+           169968960  peak memory footprint

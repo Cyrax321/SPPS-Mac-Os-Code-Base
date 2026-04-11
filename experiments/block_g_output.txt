@@ -1,0 +1,47 @@
+=================================================================
+ BLOCK G — DOWNSTREAM MACRO-BENCHMARK
+ Mock Compiler Pass: Deserialize → DFS Max Depth
+ SPPS vs Protobuf (Arena)
+=================================================================
+
+Dataset: Django AST, n=2325575
+Protocol: 3 warmup + 30 timed trials
+
+--- SPPS Pipeline ---
+  Warmup... done
+  Trial 10/30
+  Trial 20/30
+  Trial 30/30
+
+--- Protobuf (Arena) Pipeline ---
+  Warmup... done
+  Trial 10/30
+  Trial 20/30
+  Trial 30/30
+
+=================================================================
+ G1: DOWNSTREAM PIPELINE RESULTS
+=================================================================
+
+Metric                   SPPS           PB (Arena)     Speedup     
+-------------------------------------------------------------------
+Encode (ms)              23.78          111.17         4.67        x
+Decode (ms)              16.60          56.04          3.38        x
+DFS Max-Depth (ms)       32.67          27.21          0.83        x
+Total Pipeline (ms)      73.04          194.42         2.66        x
+Max Depth Found          28             28             
+Serialized Size (B)      18604592       14246489       
+Size (B/node)            8.00           6.13           
+
+--- Stability ---
+  SPPS total CV%: 24.13%
+  PB total CV%:   0.55%
+
+--- Speedup Narrative ---
+SPPS pipeline completes in 73.04 ms vs Protobuf (Arena) 194.42 ms.
+SPPS is 2.66x faster for the full deserialize-and-traverse pipeline.
+Both methods correctly find max depth = 28.
+
+=================================================================
+ BLOCK G COMPLETE
+=================================================================

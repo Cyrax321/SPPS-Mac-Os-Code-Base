@@ -1,0 +1,118 @@
+=================================================================
+ BLOCK C — REAL DATASET BENCHMARKS
+ All 4 methods × 3 datasets × 30 trials
+=================================================================
+
+Datasets:
+  Django AST (C1): n=2325575
+  sqlite3 AST (C2): n=503141
+  XMark XML (C3): n=500000
+
+
+========== Django AST (C1) (n=2325575) ==========
+
+  --- SPPS ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- LOUDS ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- FlatBuffers ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- Protobuf ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  Method         Enc(ms)     Dec(ms)     DFS(ms)     Total(ms)   Size(B)        B/node    
+  ----------------------------------------------------------------------------------------
+  SPPS           24.26       16.68       25.04       65.97       18604592       8.00      
+  LOUDS          30.18       70.67       26.83       127.68      581394         0.25      
+  FlatBuffers    175.46      0.00        40.08       215.54      46511508       20.00     
+  Protobuf       114.04      56.13       26.72       196.88      14246489       6.13      
+
+
+========== sqlite3 AST (C2) (n=503141) ==========
+
+  --- SPPS ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- LOUDS ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- FlatBuffers ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- Protobuf ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  Method         Enc(ms)     Dec(ms)     DFS(ms)     Total(ms)   Size(B)        B/node    
+  ----------------------------------------------------------------------------------------
+  SPPS           7.49        4.93        6.78        19.20       4025120        8.00      
+  LOUDS          4.65        11.46       7.39        23.51       125786         0.25      
+  FlatBuffers    38.45       0.00        10.42       48.87       10062828       20.00     
+  Protobuf       25.43       12.11       6.68        44.22       3024640        6.01      
+
+
+========== XMark XML (C3) (n=500000) ==========
+
+  --- SPPS ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- LOUDS ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- FlatBuffers ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- Protobuf ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  Method         Enc(ms)     Dec(ms)     DFS(ms)     Total(ms)   Size(B)        B/node    
+  ----------------------------------------------------------------------------------------
+  SPPS           6.43        5.38        6.91        18.72       3999992        8.00      
+  LOUDS          6.04        15.11       7.63        28.78       125001         0.25      
+  FlatBuffers    36.62       0.00        10.19       46.81       10000008       20.00     
+  Protobuf       27.20       13.32       7.72        48.24       3012185        6.02      
+
+
+=================================================================
+ C4: CROSS-DATASET STABILITY TABLE
+=================================================================
+
+  Encode ns/node by method across datasets:
+  Method         Django AST (   sqlite3 AST    XMark XML (C   CV%       
+  ----------------------------------------------------------------------
+  SPPS           10.4           14.9           12.9           17.5      
+  LOUDS          13.0           9.2            12.1           17.0      
+  FlatBuffers    75.4           76.4           73.2           2.2       
+  Protobuf       49.0           50.5           54.4           5.4       
+
+  Expected: SPPS CV% ≤ 10% across datasets
+
+=================================================================
+ BLOCK C COMPLETE
+=================================================================

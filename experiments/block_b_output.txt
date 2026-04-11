@@ -1,0 +1,68 @@
+=================================================================
+ BLOCK B — O(n) LINEARITY PROOF
+ SPPS Encode Timing · 30 trials per size · 4 topologies
+=================================================================
+
+--- B1: Path Graph ---
+  n=    100000: generating... timing 30 trials... mean=0.64 ms  ns/node=6.4
+  n=    250000: generating... timing 30 trials... mean=1.75 ms  ns/node=7.0
+  n=    500000: generating... timing 30 trials... mean=3.49 ms  ns/node=7.0
+  n=    750000: generating... timing 30 trials... mean=6.03 ms  ns/node=8.0
+  n=   1000000: generating... timing 30 trials... mean=7.30 ms  ns/node=7.3
+  n=   1500000: generating... timing 30 trials... mean=11.19 ms  ns/node=7.5
+  n=   2000000: generating... timing 30 trials... mean=14.20 ms  ns/node=7.1
+  n=   2300000: generating... timing 30 trials... mean=16.90 ms  ns/node=7.3
+  Regression: time = 7.2878e+00 * n + 3.4663e+04
+  R² = 0.997691  ✗ (<0.999)
+
+--- B2: Star Graph ---
+  n=    100000: generating... timing 30 trials... mean=0.58 ms  ns/node=5.8
+  n=    250000: generating... timing 30 trials... mean=1.59 ms  ns/node=6.3
+  n=    500000: generating... timing 30 trials... mean=3.08 ms  ns/node=6.2
+  n=    750000: generating... timing 30 trials... mean=4.73 ms  ns/node=6.3
+  n=   1000000: generating... timing 30 trials... mean=6.40 ms  ns/node=6.4
+  n=   1500000: generating... timing 30 trials... mean=9.60 ms  ns/node=6.4
+  n=   2000000: generating... timing 30 trials... mean=12.87 ms  ns/node=6.4
+  n=   2300000: generating... timing 30 trials... mean=16.21 ms  ns/node=7.0
+  Regression: time = 6.8525e+00 * n + -3.1466e+05
+  R² = 0.995000  ✗ (<0.999)
+
+--- B3: Balanced Binary Tree ---
+  n=    131071: generating... timing 30 trials... mean=1.00 ms  ns/node=7.6
+  n=    262143: generating... timing 30 trials... mean=2.08 ms  ns/node=7.9
+  n=    524287: generating... timing 30 trials... mean=4.39 ms  ns/node=8.4
+  n=   1048575: generating... timing 30 trials... mean=8.71 ms  ns/node=8.3
+  n=   1048575: generating... timing 30 trials... mean=13.36 ms  ns/node=12.7
+  n=   2097151: generating... timing 30 trials... mean=18.51 ms  ns/node=8.8
+  n=   2097151: generating... timing 30 trials... mean=18.03 ms  ns/node=8.6
+  n=   4194303: generating... timing 30 trials... mean=35.87 ms  ns/node=8.6
+  Regression: time = 8.4990e+00 * n + 6.2724e+05
+  R² = 0.981540  ✗ (<0.999)
+
+--- B4: Random AST-Like ---
+  n=    100000: generating... timing 30 trials... mean=1.68 ms  ns/node=16.8
+  n=    250000: generating... timing 30 trials... mean=4.54 ms  ns/node=18.2
+  n=    500000: generating... timing 30 trials... mean=9.08 ms  ns/node=18.2
+  n=    750000: generating... timing 30 trials... mean=13.71 ms  ns/node=18.3
+  n=   1000000: generating... timing 30 trials... mean=18.41 ms  ns/node=18.4
+  n=   1500000: generating... timing 30 trials... mean=28.04 ms  ns/node=18.7
+  n=   2000000: generating... timing 30 trials... mean=41.35 ms  ns/node=20.7
+  n=   2300000: generating... timing 30 trials... mean=42.95 ms  ns/node=18.7
+  Regression: time = 1.9615e+01 * n + -6.2343e+05
+  R² = 0.993748  ✗ (<0.999)
+
+=================================================================
+ B5: SUMMARY TABLE — ns/node across all topologies & scales
+=================================================================
+
+Topology              100K      250K      500K      750K      1.0M      1.5M      2.0M      2.3M      R²       
+----------------------------------------------------------------------------------------------------------------
+B1: Path Graph        6.4       7.0       7.0       8.0       7.3       7.5       7.1       7.3       0.997691  
+B2: Star Graph        5.8       6.3       6.2       6.3       6.4       6.4       6.4       7.0       0.995000  
+B3: Balanced Binary Tree7.6       7.9       8.4       8.3       12.7      8.8       8.6       8.6       0.981540  
+B4: Random AST-Like   16.8      18.2      18.2      18.3      18.4      18.7      20.7      18.7      0.993748  
+
+--- Expected: all ns/node in 10-25 range, all R² ≥ 0.999 ---
+
+OVERALL: SOME TOPOLOGIES FAILED
+=================================================================

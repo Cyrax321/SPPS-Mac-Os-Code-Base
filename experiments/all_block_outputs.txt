@@ -1,0 +1,665 @@
+=================================================================
+ BLOCK A — SPPS CORRECTNESS PROOFS
+ Pure C++ · No external dependencies
+=================================================================
+
+========== A1: GENERAL FUZZING (10,000 random trees) ==========
+  Progress: 1000/10000
+  Progress: 2000/10000
+  Progress: 3000/10000
+  Progress: 4000/10000
+  Progress: 5000/10000
+  Progress: 6000/10000
+  Progress: 7000/10000
+  Progress: 8000/10000
+  Progress: 9000/10000
+  Progress: 10000/10000
+  RESULT: 10000/10000 passed (0 failed)
+  STATUS: PASS
+
+========== A2: DIRECTED EDGE STRESS TEST (1,000 trees) ==========
+  Progress: 200/1000
+  Progress: 400/1000
+  Progress: 600/1000
+  Progress: 800/1000
+  Progress: 1000/1000
+  RESULT: 1000/1000 passed (0 failed)
+  STATUS: PASS
+
+========== A3: SIBLING ORDER STRESS TEST (1,000 trees) ==========
+  Progress: 200/1000
+  Progress: 400/1000
+  Progress: 600/1000
+  Progress: 800/1000
+  Progress: 1000/1000
+  RESULT: 1000/1000 passed (0 failed)
+  STATUS: PASS
+
+========== A4: DIRECTED EDGE WORKED EXAMPLE (n=9) ==========
+  Input tree (n=9, root=1):
+    1 -> {2, 3}
+    2 -> {4, 5}
+    3 -> {6, 7}
+    5 -> {8}
+    7 -> {9}
+
+  Initial degrees (augmented tree, v_virt=10, N=11):
+    D[1] = 3
+    D[2] = 3
+    D[3] = 3
+    D[4] = 1
+    D[5] = 2
+    D[6] = 1
+    D[7] = 2
+    D[8] = 1
+    D[9] = 1
+    D[10] = 1
+
+  ENCODING TRACE:
+  Step  Leaf  P     k     d     omega           Formula
+  ----------------------------------------------------------------------
+  1     4     2     0     1     22              1 * (2 * 11 + 0) = 22
+  2     6     3     0     1     33              1 * (3 * 11 + 0) = 33
+  3     8     5     0     1     55              1 * (5 * 11 + 0) = 55
+  4     5     2     1     1     23              1 * (2 * 11 + 1) = 23
+  5     2     1     0     1     11              1 * (1 * 11 + 0) = 11
+  6     9     7     0     1     77              1 * (7 * 11 + 0) = 77
+  7     7     3     1     1     34              1 * (3 * 11 + 1) = 34
+  8     3     1     1     1     12              1 * (1 * 11 + 1) = 12
+  9     1     10    0     -1    -110            -1 * (10 * 11 + 0) = -110
+
+  Direction counts: d=+1: 8, d=-1: 1
+  Final sequence (length 8): [22, 33, 55, 23, 11, 77, 34, 12]
+
+  DECODING...
+  Decoded root: 1
+  Decoded edges:
+    1 -> {2, 3}
+    2 -> {4, 5}
+    3 -> {6, 7}
+    5 -> {8}
+    7 -> {9}
+
+  STATUS: PASS
+
+========== A5: BOUNDARY CASES ==========
+  n=1: sequence length = 0 (expected 0)
+  n=1: PASS
+
+  n=2 (1->2): sequence length = 1 (expected 1), S = [4]
+  n=2 (d=+1): root=1 PASS
+
+  n=2 direction check:
+    omega=4, d=1 (expected d=+1 since leaf 2's neighbor is parent 1)
+    direction preserved: PASS
+
+  n=3 chain (1->2->3):
+    Sequence length: 2 (expected 2)
+    S = [10, 5]
+    root=1 topology: PASS
+
+  n=3 star (1->{2,3}):
+    Sequence length: 2 (expected 2)
+    S = [5, 6]
+    root=1 children[1]={2,3} PASS
+
+  OVERALL: ALL PASS
+
+=================================================================
+ BLOCK A SUMMARY
+=================================================================
+  A1 General Fuzzing:        10000/10000 PASS
+  A2 Directed Edge Stress:   1000/1000  PASS
+  A3 Sibling Order Stress:   1000/1000  PASS
+  A4 Worked Example (n=9):   PASS
+  A5 Boundary Cases:         PASS
+
+  OVERALL: ALL BLOCKS PASS
+=================================================================
+=================================================================
+ BLOCK B — O(n) LINEARITY PROOF
+ SPPS Encode Timing · 30 trials per size · 4 topologies
+=================================================================
+
+--- B1: Path Graph ---
+  n=    100000: generating... timing 30 trials... mean=0.64 ms  ns/node=6.4
+  n=    250000: generating... timing 30 trials... mean=1.75 ms  ns/node=7.0
+  n=    500000: generating... timing 30 trials... mean=3.49 ms  ns/node=7.0
+  n=    750000: generating... timing 30 trials... mean=6.03 ms  ns/node=8.0
+  n=   1000000: generating... timing 30 trials... mean=7.30 ms  ns/node=7.3
+  n=   1500000: generating... timing 30 trials... mean=11.19 ms  ns/node=7.5
+  n=   2000000: generating... timing 30 trials... mean=14.20 ms  ns/node=7.1
+  n=   2300000: generating... timing 30 trials... mean=16.90 ms  ns/node=7.3
+  Regression: time = 7.2878e+00 * n + 3.4663e+04
+  R² = 0.997691  ✗ (<0.999)
+
+--- B2: Star Graph ---
+  n=    100000: generating... timing 30 trials... mean=0.58 ms  ns/node=5.8
+  n=    250000: generating... timing 30 trials... mean=1.59 ms  ns/node=6.3
+  n=    500000: generating... timing 30 trials... mean=3.08 ms  ns/node=6.2
+  n=    750000: generating... timing 30 trials... mean=4.73 ms  ns/node=6.3
+  n=   1000000: generating... timing 30 trials... mean=6.40 ms  ns/node=6.4
+  n=   1500000: generating... timing 30 trials... mean=9.60 ms  ns/node=6.4
+  n=   2000000: generating... timing 30 trials... mean=12.87 ms  ns/node=6.4
+  n=   2300000: generating... timing 30 trials... mean=16.21 ms  ns/node=7.0
+  Regression: time = 6.8525e+00 * n + -3.1466e+05
+  R² = 0.995000  ✗ (<0.999)
+
+--- B3: Balanced Binary Tree ---
+  n=    131071: generating... timing 30 trials... mean=1.00 ms  ns/node=7.6
+  n=    262143: generating... timing 30 trials... mean=2.08 ms  ns/node=7.9
+  n=    524287: generating... timing 30 trials... mean=4.39 ms  ns/node=8.4
+  n=   1048575: generating... timing 30 trials... mean=8.71 ms  ns/node=8.3
+  n=   1048575: generating... timing 30 trials... mean=13.36 ms  ns/node=12.7
+  n=   2097151: generating... timing 30 trials... mean=18.51 ms  ns/node=8.8
+  n=   2097151: generating... timing 30 trials... mean=18.03 ms  ns/node=8.6
+  n=   4194303: generating... timing 30 trials... mean=35.87 ms  ns/node=8.6
+  Regression: time = 8.4990e+00 * n + 6.2724e+05
+  R² = 0.981540  ✗ (<0.999)
+
+--- B4: Random AST-Like ---
+  n=    100000: generating... timing 30 trials... mean=1.68 ms  ns/node=16.8
+  n=    250000: generating... timing 30 trials... mean=4.54 ms  ns/node=18.2
+  n=    500000: generating... timing 30 trials... mean=9.08 ms  ns/node=18.2
+  n=    750000: generating... timing 30 trials... mean=13.71 ms  ns/node=18.3
+  n=   1000000: generating... timing 30 trials... mean=18.41 ms  ns/node=18.4
+  n=   1500000: generating... timing 30 trials... mean=28.04 ms  ns/node=18.7
+  n=   2000000: generating... timing 30 trials... mean=41.35 ms  ns/node=20.7
+  n=   2300000: generating... timing 30 trials... mean=42.95 ms  ns/node=18.7
+  Regression: time = 1.9615e+01 * n + -6.2343e+05
+  R² = 0.993748  ✗ (<0.999)
+
+=================================================================
+ B5: SUMMARY TABLE — ns/node across all topologies & scales
+=================================================================
+
+Topology              100K      250K      500K      750K      1.0M      1.5M      2.0M      2.3M      R²       
+----------------------------------------------------------------------------------------------------------------
+B1: Path Graph        6.4       7.0       7.0       8.0       7.3       7.5       7.1       7.3       0.997691  
+B2: Star Graph        5.8       6.3       6.2       6.3       6.4       6.4       6.4       7.0       0.995000  
+B3: Balanced Binary Tree7.6       7.9       8.4       8.3       12.7      8.8       8.6       8.6       0.981540  
+B4: Random AST-Like   16.8      18.2      18.2      18.3      18.4      18.7      20.7      18.7      0.993748  
+
+--- Expected: all ns/node in 10-25 range, all R² ≥ 0.999 ---
+
+OVERALL: SOME TOPOLOGIES FAILED
+=================================================================
+=================================================================
+ BLOCK H — WORKED EXAMPLES FOR PAPER
+ Step-by-step encoding and decoding traces
+=================================================================
+=================================================================
+ H1: COMPLETE ENCODING TRACE (n=7)
+=================================================================
+
+  INPUT TREE (n=7, root=1):
+         1
+        / \
+       2   3
+      / \   \
+     4   5   6
+             |
+             7
+
+  Edge list: {(1,2), (1,3), (2,4), (2,5), (3,6), (6,7)}
+
+  STEP 1: Compute parent[], ChildRank[], neighborSum[]
+  Node    Parent    ChildRank   NeighborSum     
+  ----------------------------------------------
+  1       0         0           5               
+  2       1         0           10              
+  3       1         1           7               
+  4       2         0           2               
+  5       2         1           2               
+  6       3         0           10              
+  7       6         0           6               
+
+  STEP 2: Virtual node injection
+    v_virt = 8 (node n+1)
+    N = n + 2 = 9 (radix for encoding)
+    Attach v_virt=8 as child of root r=1 at rank 2
+    neighborSum[1] updated to 13
+
+  STEP 3: Degree array D[] (unrooted augmented tree)
+    Formula: D[v] = |children(v)| + 1 (for parent edge)
+    D[root] = |children(root)| + 1 (for v_virt edge)
+    D[v_virt] = 1
+  Node      |children|D[v]      Is leaf?       
+  ---------------------------------------------
+  1         2         3                        
+  2         2         3                        
+  3         1         2                        
+  4         0         1         YES            
+  5         0         1         YES            
+  6         1         2                        
+  7         0         1         YES            
+  8         0         1         YES            
+
+  STEP 4: Prüfer-like encoding (leaf removal)
+  Step  Leaf    P       k       d     ω = d·(P·N+k)    Action                        
+  ----------------------------------------------------------------------------
+  1     4       2       0       1     18                  Remove 4, D[2]=3->2
+  2     5       2       1       1     19                  Remove 5, D[2]=2->1
+  3     2       1       0       1     9                   Remove 2, D[1]=3->2
+  4     7       6       0       1     54                  Remove 7, D[6]=2->1
+  5     6       3       0       1     27                  Remove 6, D[3]=2->1
+  6     3       1       1       1     10                  Remove 3, D[1]=2->1
+  7     1       8       0       -1    -72                 Remove 1, D[8]=1->0
+
+  Drop last entry (virtual root edge).
+
+  FINAL SEQUENCE S (length 6):
+    S = [18, 19, 9, 54, 27, 10]
+    (All values positive → all d=+1 → all edges parent→child)
+
+
+=================================================================
+ H2: COMPLETE DECODING TRACE (same n=7 tree)
+=================================================================
+
+  INPUT SEQUENCE S = [18, 19, 9, 54, 27, 10]
+  n = |S| + 1 = 7
+  N = n + 2 = 9
+
+  PASS 1: Extract parent labels, compute degrees
+  i     ω_i      |ω_i|    P_i       k_i       d_i       
+  --------------------------------------------------------
+  1     18        18        2         0         1         
+  2     19        19        2         1         1         
+  3     9         9         1         0         1         
+  4     54        54        6         0         1         
+  5     27        27        3         0         1         
+  6     10        10        1         1         1         
+
+  After Pass 1, D_dec[] (Prüfer degree = 1 + appearances):
+    D_dec[1] = 3
+    D_dec[2] = 3
+    D_dec[3] = 2
+    D_dec[4] = 1  (leaf)
+    D_dec[5] = 1  (leaf)
+    D_dec[6] = 2
+    D_dec[7] = 1  (leaf)
+    D_dec[8] = 1  (leaf)
+
+  BasePointer[] (CSR prefix sum from out_deg):
+    BasePointer[1] = 0  (out_deg=2)
+    BasePointer[2] = 2  (out_deg=2)
+    BasePointer[3] = 4  (out_deg=1)
+    BasePointer[6] = 5  (out_deg=1)
+
+  PASS 2: Reconstruct tree (fill CSR spatial map M[])
+  i     Leaf    P_i     k_i     M[BP[P]+k] = leaf        
+  -------------------------------------------------------
+  1     4       2       0       M[2+0] = 4               
+  2     5       2       1       M[2+1] = 5               
+  3     2       1       0       M[0+0] = 2               
+  4     7       6       0       M[5+0] = 7               
+  5     6       3       0       M[4+0] = 6               
+  6     3       1       1       M[0+1] = 3               
+
+  Remaining degree-1 nodes: 1 and 8
+  Virtual node = 8, so root = 1
+
+  FINAL CSR MAP M[]:
+    Node 1 children: [2, 3]
+    Node 2 children: [4, 5]
+    Node 3 children: [6]
+    Node 6 children: [7]
+
+  RECONSTRUCTED TREE:
+    1 -> {2, 3}
+    2 -> {4, 5}
+    3 -> {6}
+    6 -> {7}
+
+  VERIFICATION: Original tree MATCHES reconstructed tree → PASS
+
+=================================================================
+ BLOCK H COMPLETE
+=================================================================
+=================================================================
+ BLOCK C — REAL DATASET BENCHMARKS
+ All 4 methods × 3 datasets × 30 trials
+=================================================================
+
+Datasets:
+  Django AST (C1): n=2325575
+  sqlite3 AST (C2): n=503141
+  XMark XML (C3): n=500000
+
+
+========== Django AST (C1) (n=2325575) ==========
+
+  --- SPPS ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- LOUDS ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- FlatBuffers ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- Protobuf ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  Method         Enc(ms)     Dec(ms)     DFS(ms)     Total(ms)   Size(B)        B/node    
+  ----------------------------------------------------------------------------------------
+  SPPS           24.26       16.68       25.04       65.97       18604592       8.00      
+  LOUDS          30.18       70.67       26.83       127.68      581394         0.25      
+  FlatBuffers    175.46      0.00        40.08       215.54      46511508       20.00     
+  Protobuf       114.04      56.13       26.72       196.88      14246489       6.13      
+
+
+========== sqlite3 AST (C2) (n=503141) ==========
+
+  --- SPPS ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- LOUDS ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- FlatBuffers ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- Protobuf ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  Method         Enc(ms)     Dec(ms)     DFS(ms)     Total(ms)   Size(B)        B/node    
+  ----------------------------------------------------------------------------------------
+  SPPS           7.49        4.93        6.78        19.20       4025120        8.00      
+  LOUDS          4.65        11.46       7.39        23.51       125786         0.25      
+  FlatBuffers    38.45       0.00        10.42       48.87       10062828       20.00     
+  Protobuf       25.43       12.11       6.68        44.22       3024640        6.01      
+
+
+========== XMark XML (C3) (n=500000) ==========
+
+  --- SPPS ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- LOUDS ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- FlatBuffers ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  --- Protobuf ---
+    Trial 10/30
+    Trial 20/30
+    Trial 30/30
+
+  Method         Enc(ms)     Dec(ms)     DFS(ms)     Total(ms)   Size(B)        B/node    
+  ----------------------------------------------------------------------------------------
+  SPPS           6.43        5.38        6.91        18.72       3999992        8.00      
+  LOUDS          6.04        15.11       7.63        28.78       125001         0.25      
+  FlatBuffers    36.62       0.00        10.19       46.81       10000008       20.00     
+  Protobuf       27.20       13.32       7.72        48.24       3012185        6.02      
+
+
+=================================================================
+ C4: CROSS-DATASET STABILITY TABLE
+=================================================================
+
+  Encode ns/node by method across datasets:
+  Method         Django AST (   sqlite3 AST    XMark XML (C   CV%       
+  ----------------------------------------------------------------------
+  SPPS           10.4           14.9           12.9           17.5      
+  LOUDS          13.0           9.2            12.1           17.0      
+  FlatBuffers    75.4           76.4           73.2           2.2       
+  Protobuf       49.0           50.5           54.4           5.4       
+
+  Expected: SPPS CV% ≤ 10% across datasets
+
+=================================================================
+ BLOCK C COMPLETE
+=================================================================
+=================================================================
+ BLOCK D — LOUDS BASELINE INTEGRATION
+ SPPS vs FlatBuffers vs Protobuf vs LOUDS
+ 30 trials · Process-level measurement
+=================================================================
+
+Dataset: Django AST, n=2325575
+Protocol: 2 warmup + 30 timed trials per method
+
+--- SPPS ---
+  Trial 10/30
+  Trial 20/30
+  Trial 30/30
+
+--- LOUDS ---
+  Trial 10/30
+  Trial 20/30
+  Trial 30/30
+
+--- FlatBuffers ---
+  Trial 10/30
+  Trial 20/30
+  Trial 30/30
+
+--- Protobuf ---
+  Trial 10/30
+  Trial 20/30
+  Trial 30/30
+
+=================================================================
+ D2: HEAD-TO-HEAD COMPARISON TABLE
+=================================================================
+
+Method         Enc(ms)     Dec(ms)     DFS(ms)     Size(bytes)    B/node      
+------------------------------------------------------------------------------
+SPPS           23.56       16.76       25.39       18604592       8.00        
+LOUDS          28.34       68.10       26.54       581394         0.25        
+FlatBuffers    171.58      0.00        38.09       46511508       20.00       
+Protobuf       110.79      55.79       26.53       14246489       6.13        
+
+=================================================================
+ D3: SPEEDUP NARRATIVE
+=================================================================
+
+Total roundtrip (encode + decode + DFS):
+  SPPS:        65.72 ms
+  LOUDS:       122.98 ms
+  FlatBuffers: 209.67 ms
+  Protobuf:    193.11 ms
+
+Speedup of SPPS over:
+  LOUDS:       1.87x
+  FlatBuffers: 3.19x
+  Protobuf:    2.94x
+
+Size comparison:
+  SPPS:        8.00 B/node
+  LOUDS:       0.25 B/node
+  FlatBuffers: 20.00 B/node
+  Protobuf:    6.13 B/node
+
+=================================================================
+ BLOCK D COMPLETE
+=================================================================
+=================================================================
+ BLOCK E — COMPRESSION EXPERIMENTS
+ SPPS + zstd on all datasets and topologies
+=================================================================
+
+========== E1: SPPS + zstd on All Three Datasets ==========
+
+Datasets loaded:
+  Django AST: n=2325575
+  sqlite3 AST: n=503141
+  XMark XML: n=500000
+
+Dataset/Level            Comp.Bytes  Bytes/Node  Comp.ms     Decomp.ms   Ratio     
+-----------------------------------------------------------------------------------
+Django AST (raw)         18604592    8.00        -           -           1.00      
+Django AST (zstd-1)      7671205     3.30        53.36       25.09       2.43      
+Django AST (zstd-3)      7638651     3.28        59.46       22.83       2.44      
+
+sqlite3 AST (raw)        4025120     8.00        -           -           1.00      
+sqlite3 AST (zstd-1)     2373514     4.72        9.26        4.82        1.70      
+sqlite3 AST (zstd-3)     1925269     3.83        14.55       5.13        2.09      
+
+XMark XML (raw)          3999992     8.00        -           -           1.00      
+XMark XML (zstd-1)       1347358     2.69        10.74       4.90        2.97      
+XMark XML (zstd-3)       1344437     2.69        12.64       4.88        2.98      
+
+
+========== E2: Compression Across Topologies (n=1M) ==========
+
+Topology                 Raw B/node  zstd-1 B/n  zstd-3 B/n  Ratio-3   
+-----------------------------------------------------------------------
+Path Graph               8.00        5.55        3.14        2.54      
+Star Graph               8.00        1.02        1.02        7.88      
+Balanced Binary          8.00        3.60        3.12        2.56      
+Random AST-Like          8.00        4.50        4.16        1.92      
+
+========== E3: All-Format Compression Comparison ==========
+(Django AST, n=2,325,575 — all formats through same zstd pipeline)
+
+Format                   Raw B/node     zstd-1 B/n     zstd-3 B/n     Ratio-3     
+----------------------------------------------------------------------------------
+SPPS                     8.00           3.30           3.28           2.44        
+Protobuf (Arena)         6.13           3.97           2.00           3.07        
+FlatBuffers              20.00          6.07           6.01           3.33        
+
+--- Summary ---
+SPPS raw:           8.00 B/node
+SPPS+zstd-3:        3.28 B/node (2.44x compression)
+Protobuf raw:       6.13 B/node
+Protobuf+zstd-3:    2.00 B/node (3.07x compression)
+FlatBuffers raw:    20.00 B/node
+FlatBuffers+zstd-3: 6.01 B/node (3.33x compression)
+
+=================================================================
+ BLOCK E COMPLETE
+=================================================================
+=================================================================
+ BLOCK F — TAIL LATENCY AND VARIANCE
+ 30 trials per dataset · SPPS encode + total-read
+=================================================================
+
+Datasets available:
+  Django AST: n=2325575
+  sqlite3 AST: n=503141
+  XMark XML: n=500000
+
+========== F1: PER-DATASET TAIL LATENCY ==========
+
+--- Django AST (n=2325575) ---
+  Warmup... done
+  Trial 10/30
+  Trial 20/30
+  Trial 30/30
+
+  Metric      P50       P90       P95       P99       Max       P99-P50     CV%       
+  ------------------------------------------------------------------------------------
+  Encode(ms)  23.90     24.51     24.66     25.69     25.69     1.79        1.66      
+  TotalRd(ms) 41.18     41.87     41.90     42.09     42.09     0.91        0.65      
+
+--- sqlite3 AST (n=503141) ---
+  Warmup... done
+  Trial 10/30
+  Trial 20/30
+  Trial 30/30
+
+  Metric      P50       P90       P95       P99       Max       P99-P50     CV%       
+  ------------------------------------------------------------------------------------
+  Encode(ms)  7.32      7.77      7.86      7.90      7.90      0.58        2.98      
+  TotalRd(ms) 11.40     11.75     11.82     11.83     11.83     0.43        1.30      
+
+--- XMark XML (n=500000) ---
+  Warmup... done
+  Trial 10/30
+  Trial 20/30
+  Trial 30/30
+
+  Metric      P50       P90       P95       P99       Max       P99-P50     CV%       
+  ------------------------------------------------------------------------------------
+  Encode(ms)  6.44      6.71      6.72      6.90      6.90      0.47        2.14      
+  TotalRd(ms) 12.39     12.63     12.69     12.89     12.89     0.50        1.55      
+
+========== F2: CROSS-DATASET CV% STABILITY ==========
+
+  Dataset           Encode CV%     TotalRead CV%  
+  ------------------------------------------------
+  Django AST        1.66           0.65           
+  sqlite3 AST       2.98           1.30           
+  XMark XML         2.14           1.55           
+  ------------------------------------------------
+  Mean CV%          2.26           1.17           
+
+  Expected: All CV% ≤ 5%
+  STATUS: ALL STABLE (CV% ≤ 5%)
+
+=================================================================
+ BLOCK F COMPLETE
+=================================================================
+=================================================================
+ BLOCK G — DOWNSTREAM MACRO-BENCHMARK
+ Mock Compiler Pass: Deserialize → DFS Max Depth
+ SPPS vs Protobuf (Arena)
+=================================================================
+
+Dataset: Django AST, n=2325575
+Protocol: 3 warmup + 30 timed trials
+
+--- SPPS Pipeline ---
+  Warmup... done
+  Trial 10/30
+  Trial 20/30
+  Trial 30/30
+
+--- Protobuf (Arena) Pipeline ---
+  Warmup... done
+  Trial 10/30
+  Trial 20/30
+  Trial 30/30
+
+=================================================================
+ G1: DOWNSTREAM PIPELINE RESULTS
+=================================================================
+
+Metric                   SPPS           PB (Arena)     Speedup     
+-------------------------------------------------------------------
+Encode (ms)              23.78          111.17         4.67        x
+Decode (ms)              16.60          56.04          3.38        x
+DFS Max-Depth (ms)       32.67          27.21          0.83        x
+Total Pipeline (ms)      73.04          194.42         2.66        x
+Max Depth Found          28             28             
+Serialized Size (B)      18604592       14246489       
+Size (B/node)            8.00           6.13           
+
+--- Stability ---
+  SPPS total CV%: 24.13%
+  PB total CV%:   0.55%
+
+--- Speedup Narrative ---
+SPPS pipeline completes in 73.04 ms vs Protobuf (Arena) 194.42 ms.
+SPPS is 2.66x faster for the full deserialize-and-traverse pipeline.
+Both methods correctly find max depth = 28.
+
+=================================================================
+ BLOCK G COMPLETE
+=================================================================
