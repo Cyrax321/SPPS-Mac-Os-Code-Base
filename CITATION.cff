@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the associated manuscript."
+title: "Signed Positional Prüfer Sequences (SPPS)"
+authors:
+  - name: "The Authors"
+version: 0.1.0
+date-released: 2026-04-10
+repository-code: "https://github.com/Cyrax321/SPPS-Mac-Os-Code-Base"
+license: "All Rights Reserved"
+abstract: >
+  SPPS is a novel O(n) tree serialization algorithm based on an extension
+  of the classical Prüfer sequence encoding. Submitted to ESA 2026.
