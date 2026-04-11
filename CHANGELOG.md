@@ -33,3 +33,17 @@ All notable changes to the experiment suite are documented here.
 - Block A: correctness proofs (10,000 fuzzing trials)
 - Block B: O(n) linearity regression across 4 topologies
 - Initial SPPS encode/decode implementation
+
+## [0.4.1] — 2026-04-11
+### Added
+- `docs/` directory: algorithm overview, benchmark methodology, cache analysis,
+  LOUDS comparison, results summary, compression analysis, dataset description
+- `scripts/` directory: build_all.sh, run_all.sh, verify_datasets.sh
+- `Makefile` in experiments/ with all blocks + gen-proto target
+- `.github/workflows/check.yml`: CI for structure and dataset integrity
+- `CITATION.cff`, `SECURITY.md`, `ACKNOWLEDGEMENTS.md`
+- `.editorconfig` for consistent editor settings
+
+### Changed
+- README expanded with full datasets section including edge-list format
+- Review-only copyright notice added to README header and License section
