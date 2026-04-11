@@ -1,3 +1,21 @@
+<div align="center">
+
+---
+
+### ⚠️ REVIEW-ONLY NOTICE
+
+**This repository is provided solely for peer review and reproducibility purposes**  
+**associated with the submitted manuscript.**
+
+Reuse, redistribution, modification, or deployment of any code, data, or results  
+contained herein is **strictly prohibited** without explicit written permission from the authors.
+
+© 2026 The Authors. All Rights Reserved.
+
+---
+
+</div>
+
 # SPPS — Signed Positional Prüfer Sequences
 ### Experimental Code Base · macOS / Apple Silicon
 
@@ -453,9 +471,40 @@ cd experiments
 
 ---
 
-## License
+## ⚖️ Legal Notice & Copyright
 
-This repository is the accompanying experimental code for an academic paper submission. All rights reserved by the authors. No license for redistribution is granted until the paper is published.
+```
+Copyright © 2026 The Authors. All Rights Reserved.
+
+This repository and all of its contents — including but not limited to source code,
+experiment scripts, benchmark data, terminal output logs, research reports, and
+the accompanying manuscript PDF — are made available SOLELY for the purpose of
+peer review and reproducibility verification associated with the submitted manuscript:
+
+  "Signed Positional Prüfer Sequences (SPPS): A Novel Linear-Time Tree
+   Serialization Algorithm"
+
+THIS IS NOT AN OPEN-SOURCE RELEASE.
+
+The following actions are STRICTLY PROHIBITED without explicit written permission
+from the authors:
+
+  • Reuse of any portion of the code in other projects or products
+  • Redistribution of this repository or any of its contents, in whole or in part
+  • Modification, adaptation, translation, or creation of derivative works
+  • Deployment of the algorithm or implementation in any production system
+  • Academic citation of unpublished results prior to formal publication
+  • Training of machine learning models on the contents of this repository
+
+VIOLATION OF THESE TERMS MAY CONSTITUTE COPYRIGHT INFRINGEMENT AND/OR
+MISAPPROPRIATION OF UNPUBLISHED ACADEMIC WORK.
+
+Upon publication of the accepted manuscript, a formal open-source license
+will be designated by the authors. Until that time, no license — express,
+implied, or statutory — is granted to any party.
+```
+
+> **Permitted use:** Reviewers assigned by the programme committee may read, compile, and run the code solely for the purpose of evaluating the submitted manuscript. No other use is permitted.
 
 ---
 
