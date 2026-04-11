@@ -45,3 +45,15 @@ Primary dataset: Django AST (n=2,325,575 nodes).
 ## Table 5: Correctness (Block A)
 
 12,006 / 12,006 tests PASS (0 failures across all test categories).
+
+## Table 6: Memory Footprint (Django AST)
+
+| Method | Peak RSS (MB) | Instructions (B) | Cycles (B) | IPC |
+|---|---|---|---|---|
+| **SPPS** | **174** | 14.26 | 3.43 | 4.15 |
+| LOUDS | 168 | 20.29 | 5.14 | 3.95 |
+| FlatBuffers | 241 | 29.05 | 6.18 | 4.69 |
+| Protobuf | 356 | 25.79 | 6.04 | 4.27 |
+
+SPPS achieves the fewest retired instructions (14.26B) and cycles (3.43B)
+of all four methods on the primary dataset.
