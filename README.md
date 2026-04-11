@@ -1,8 +1,7 @@
 # SPPS — Signed Positional Prüfer Sequences
 ### Experimental Code Base · macOS / Apple Silicon
 
-> **Paper**: *Signed Positional Prüfer Sequences (SPPS): A Novel Linear-Time Tree Serialization Algorithm*  
-> **Target venue**: ESA 2026  
+> **Paper**: *Signed Positional Prüfer Sequences (SPPS): A Novel Linear-Time Tree Serialization Algorithm*    
 > **Platform**: Apple M1 (arm64) · macOS 26.2 · Apple Clang 17.0.0
 
 ---
