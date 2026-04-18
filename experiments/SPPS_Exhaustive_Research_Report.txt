@@ -772,30 +772,30 @@ Django AST's higher variance is attributable to its 4.6× larger working set (18
 
 ## 13. Microarchitectural Profiling (Real Django AST, n = 2,325,575)
 
-Profiling was conducted using two complementary methods: (1) Apple xctrace CPU Counters with bottleneck analysis mode (trace: `profile_louds_new.trace`), and (2) `/usr/bin/time -l` for per-process resource utilization. **LOUDS now uses O(1) rank/select acceleration.**
+Profiling was conducted using two complementary methods: (1) macOS `proc_pid_rusage` (RUSAGE_INFO_V4) for isolated per-node cycle and instruction counts via direct hardware PMU counter reads, and (2) Apple xctrace CPU Counters in bottleneck analysis mode for cycle decomposition. **LOUDS now uses O(1) rank/select acceleration.**
 
-### 13.1 Per-Method Resource Utilization (`/usr/bin/time -l`)
+### 13.1 Isolated Per-Node Metrics (proc_pid_rusage)
+
+To obtain physically consistent per-node metrics, we use `proc_pid_rusage(RUSAGE_INFO_V4)` which reads the hardware performance monitoring unit (PMU) counters directly from user space with zero sampling overhead. Counters are captured immediately before and after the 5-iteration benchmark loop, excluding file I/O and warmup.
 
 | Metric | SPPS | LOUDS (O(1) accel) | FlatBuffers | Protobuf |
 |--------|------|-------------------|-------------|----------|
-| **Mean Iter Time (ms)** | **65.11** | **159.18** | 214.10 | **412.10** |
-| **Instructions Retired** | **14.26 B** | **20.29 B** | 29.05 B | **25.79 B** |
-| **CPU Cycles** | **3.43 B** | **5.14 B** | 6.18 B | **6.04 B** |
-| **IPC** | **4.15** | 3.95 | **4.69** | 4.27 |
-| **Peak RSS (MB)** | 174 | **168** | 241 | **356** |
-| **Peak Footprint (MB)** | 174 | **162** | 234 | **349** |
-| **Page Reclaims** | 12,075 | **11,318** | 15,981 | **24,205** |
-| **Page Faults** | — | **96** | — | — |
-| **Instructions/Node** | **6.13** | 8.72 | 12.49 | **11.09** |
-| **Cycles/Node** | **1.48** | 2.21 | 2.66 | **2.60** |
+| **Mean Iter Time (ms)** | **65.37** | **158.26** | 216.12 | **235.31** |
+| **Instructions/Node** | **214.94** | 650.70 | 1265.65 | 1050.64 |
+| **Cycles/Node** | **86.87** | 211.19 | 285.92 | **283.50** |
+| **IPC** | 2.47 | 3.08 | **4.43** | 3.71 |
+| **Cycles Ratio (vs SPPS)** | **1.00×** | 2.43× | 3.29× | **3.26×** |
+| **Peak RSS (MB)** | 180 | **168** | 240 | **355** |
+
+Per-node metrics are computed as total isolated counters / (5 iterations × 2,325,575 nodes). At 3.2 GHz, SPPS's 86.87 cycles/node corresponds to 63.1 ms of CPU time per iteration, consistent with the 65.37 ms wall time (96.5% CPU utilization). SPPS achieves the lowest cycles/node (86.87): **2.43× fewer than LOUDS, 3.29× fewer than FlatBuffers, and 3.26× fewer than Protobuf**.
+
+SPPS's lower IPC (2.47 vs 4.43 for FlatBuffers) reflects fewer total instructions per node (214.94 vs 1265.65) rather than pipeline inefficiency: SPPS completes each node's work in fewer instructions, leaving less opportunity for instruction-level parallelism.
 
 Individual iteration times:
-- **SPPS**: 65.43, 64.89, 65.21, 65.07, 64.95 ms
-- **LOUDS (accel)**: 157.22, 159.37, 159.71, 158.36, 161.24 ms
-- **FlatBuffers**: 211.87, 214.72, 215.59, 216.29, 212.03 ms
-- **Protobuf**: 431.34, 416.90, 403.72, 403.78, 404.77 ms
-
-> **LOUDS instruction increase**: Unaccelerated LOUDS had 19.96B instructions; accelerated LOUDS has 20.29B. The +0.33B overhead comes from 64-bit block packing and rank superblock construction added to the encode phase. IPC dropped from 4.15 to 3.95 (slightly more cache pressure from packed block structure). Despite these increases, peak RSS is unchanged at 168 MB.
+- **SPPS**: 64.27, 65.15, 65.75, 64.79, 66.89 ms
+- **LOUDS (accel)**: 158.05, 157.48, 158.21, 159.04, 158.53 ms
+- **FlatBuffers**: 223.85, 218.28, 213.57, 212.80, 212.09 ms
+- **Protobuf**: 208.24, 224.11, 197.77, 310.63, 235.81 ms
 
 ### 13.2 xctrace CPU Counter Bottleneck Analysis
 
@@ -855,22 +855,20 @@ Protobuf's 356 MB peak RSS (2.05× SPPS) is caused by:
 | 5 | Raw size (B/node) | 8.00 | **0.25** | 20.00 | 6.13 | LOUDS |
 | 6 | Compressed (B/node) | **3.28** | — | — | 6.13 | **SPPS** |
 | 7 | Total size (bytes) | 18.6M | **0.58M** | 46.5M | 14.2M | LOUDS |
-| 8 | Peak RSS (MB) | 174 | **168** | 241 | 356 | LOUDS |
-| 9 | Instructions retired | **14.26B** | 20.29B | 29.05B | 25.79B | **SPPS** |
-| 10 | CPU cycles | **3.43B** | 5.14B | 6.18B | 6.04B | **SPPS** |
-| 11 | IPC | 4.15 | 3.95 | **4.69** | 4.27 | FB |
-| 12 | Instructions/node | **6.13** | 8.72 | 12.49 | 11.09 | **SPPS** |
-| 13 | Cycles/node | **1.48** | 2.21 | 2.66 | 2.60 | **SPPS** |
-| 14 | Delivery bottleneck | **0.366** | 0.850 | 0.716 | 0.747 | **SPPS** |
-| 15 | Processing bottleneck | **0.187** | 0.299 | 0.424 | 0.400 | **SPPS** |
-| 16 | Encode throughput (MN/s) | **97.44** | 60.25 | 13.16 | 20.77 | **SPPS** |
-| 17 | Preserves direction | ✅ | ❌ | ✅ | ✅ | — |
-| 18 | Preserves sibling order | ✅ | ❌ | ✅ | ✅ | — |
-| 19 | Bijective encoding | ✅ | ❌ | ❌ | ❌ | **SPPS** |
-| 20 | No auxiliary structures | ✅ | ❌ | ❌ | ❌ | **SPPS** |
-| 21 | O(n) proven | ✅ | ✅ | ✅ | ✅ | — |
+| 8 | Peak RSS (MB) | 180 | **168** | 240 | 355 | LOUDS |
+| 9 | Instructions/node | **214.94** | 650.70 | 1265.65 | 1050.64 | **SPPS** |
+| 10 | Cycles/node | **86.87** | 211.19 | 285.92 | 283.50 | **SPPS** |
+| 11 | IPC | 2.47 | 3.08 | **4.43** | 3.71 | FB |
+| 12 | Delivery bottleneck | **0.366** | 0.850 | 0.716 | 0.747 | **SPPS** |
+| 13 | Processing bottleneck | **0.187** | 0.299 | 0.424 | 0.400 | **SPPS** |
+| 14 | Encode throughput (MN/s) | **97.44** | 60.25 | 13.16 | 20.77 | **SPPS** |
+| 15 | Preserves direction | ✅ | ❌ | ✅ | ✅ | — |
+| 16 | Preserves sibling order | ✅ | ❌ | ✅ | ✅ | — |
+| 17 | Bijective encoding | ✅ | ❌ | ❌ | ❌ | **SPPS** |
+| 18 | No auxiliary structures | ✅ | ❌ | ❌ | ❌ | **SPPS** |
+| 19 | O(n) proven | ✅ | ✅ | ✅ | ✅ | — |
 
-**SPPS wins 11 of 17 quantitative metrics**, LOUDS wins 3 (size-related), FlatBuffers wins 2 (decode, IPC).
+**SPPS wins 10 of 16 quantitative metrics**, LOUDS wins 3 (size-related), FlatBuffers wins 2 (zero-copy decode, IPC).
 
 ---
 
@@ -921,7 +919,7 @@ Based on comprehensive evaluation across 7 experimental blocks, ~13,700 trials, 
 
 4. **Highest Encoding Throughput**: 97.44 MNodes/s, equivalent to 779.5 MB/s output rate. **1.62× faster encode than accelerated LOUDS**, **4.69× faster than Protobuf**.
 
-5. **Fewest Instructions Per Node**: 6.13 instructions/node — **1.42× fewer than accelerated LOUDS (8.72), 2.04× fewer than FlatBuffers (12.49)**.
+5. **Fewest Cycles Per Node**: Isolated `proc_pid_rusage` profiling yields 86.87 cycles/node — **2.43× fewer than accelerated LOUDS (211.19), 3.29× fewer than FlatBuffers (285.92), 3.26× fewer than Protobuf (283.50)**. At 3.2 GHz, this corresponds to 63.1 ms CPU time, consistent with the 65.37 ms wall time (96.5% utilization).
 
 6. **Lowest Cache Pressure**: xctrace delivery bottleneck of 0.366 — **2.32× lower than accelerated LOUDS (0.850)**, confirming SPPS's contiguous integer-array access pattern generates far fewer cache misses than LOUDS's bitvector decode even with O(1) rank/select.
 
